@@ -1,0 +1,338 @@
+:root {
+    --bg-color: #F2F4F8; /* Light gray background */
+    --text-primary: #001B38; /* Deep Navy for text */
+    --text-muted: #5F6C7B; /* Muted navy/gray */
+    --accent-primary: #FFDB00; /* StartupClass Yellow */
+    --accent-secondary: #F75459; /* StartupClass Accent Pink/Red */
+    --card-bg: #FFFFFF; /* Solid White for cards */
+    --glass-border: #CBD5E1; /* Solid light gray for borders and lines */
+    --node-border: #E2E8F0; /* Soft border for cards */
+    --glow-color: rgba(255, 219, 0, 0.4); /* Yellow glow instead of cyan */
+    --font-heading: 'Noto Sans JP', sans-serif;
+    --font-body: 'Noto Sans JP', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Remove stars */
+.stars-container {
+    display: none;
+}
+
+@keyframes starPulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+.app-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center horizontally on large screens */
+    min-height: 100vh;
+    justify-content: center; /* Center vertically on large screens */
+}
+
+/* Ensure the header text stays centered */
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 4rem;
+    animation: fadeInDown 1s ease-out;
+}
+
+header h1 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 800; /* Stronger bold for StartupClass feel */
+    margin-bottom: 0.5rem;
+    color: var(--text-primary); /* Navy text */
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+#org-chart-container {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    padding: 2rem 5rem 5rem 5rem;
+    animation: fadeInUp 1s ease-out 0.2s both;
+    min-width: 100%;
+}
+
+/* Remove glassmorphism, use clean flat design */
+.glass {
+    background: var(--card-bg);
+    border: 1px solid var(--node-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 27, 56, 0.05); /* Very subtle navy shadow */
+}
+
+/* Node Styling */
+.node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.node:hover {
+    transform: translateY(-5px);
+}
+
+.card {
+    padding: 1rem 0.5rem; /* Reduced padding */
+    text-align: center;
+    width: 160px; /* Reduced width to shrink chart */
+    min-width: 160px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 auto; /* Ensure the card centers itself in its flex column */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 27, 56, 0.1);
+    border-color: var(--accent-primary);
+}
+
+.role {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem; /* Smaller font for role */
+    margin-bottom: 0.2rem;
+}
+
+.name {
+    font-size: 0.8rem; /* Smaller font for name */
+    color: var(--text-muted);
+}
+
+/* Hierarchy Lines */
+.children {
+    display: flex;
+    justify-content: center;
+    gap: 1rem; /* Much smaller gap between main branches */
+    margin-top: 2rem; /* Reduced vertical gap */
+    position: relative;
+    width: max-content; /* Ensure container matches children width */
+}
+
+/* Vertical line down from parent to children container */
+.children::before {
+    content: '';
+    position: absolute;
+    top: -1rem; /* Adjusted for smaller parent gap */
+    left: 50%;
+    transform: translateX(-50%); /* Ensure perfect centering */
+    width: 2px;
+    height: 1rem;
+    background: var(--glass-border);
+}
+
+/* Vertical line up from child to the horizontal line */
+.node::before {
+    content: '';
+    position: absolute;
+    top: -1rem; /* Adjusted for smaller parent gap */
+    left: 50%;
+    transform: translateX(-50%); /* Ensure perfect centering */
+    width: 2px;
+    height: 1rem;
+    background: var(--glass-border);
+}
+
+/* Horizontal line connecting siblings */
+.children::after {
+    content: '';
+    position: absolute;
+    top: -1rem; /* Align with new smaller height gaps */
+    /* If cards are exactly 160px wide and center-aligned, the vertical lines come out from the exact center.
+       Since flex children fill space equally if they have equal widths, the distance from the container edge 
+       to the center of the first child is exactly half the card's width: 80px.
+    */
+    left: 80px;
+    right: 80px;
+    height: 2px;
+    background: var(--glass-border);
+}
+
+.children.single-child::after {
+    display: none;
+}
+
+/* Remove line for single child or first/last cases if needed, but simple is better for now */
+.node:first-child:last-child::before {
+    display: none;
+}
+
+/* Horizontal line range adjustments - removed the 10% override */
+
+/* Vertical layout styles for roles */
+.children.vertical {
+    flex-direction: column;
+    gap: 1rem; /* Tighter vertical stacking */
+    margin-top: 1rem;
+}
+
+.children.vertical::before {
+    height: 1rem;
+    top: -1rem;
+}
+
+.children.vertical::after {
+    display: none;
+}
+
+.children.vertical > .node::before {
+    display: block; /* Ensure it shows even if it's an only child */
+    height: 1rem;
+    top: -1rem;
+}
+
+.children.vertical > .node:first-child::before {
+    /* The first child connects to the container's top line */
+    height: 0;
+    display: none; /* Let the container's ::before handle this connection */
+}
+
+.children.vertical > .node > .card {
+    width: 160px; /* Force stacked width to match global width */
+}
+
+.app-container > #org-chart-container > .node::before {
+    display: none; /* No top line for root */
+}
+
+/* Disable horizontal line if only one child */
+.node:only-child::before {
+    display: block; /* keep vertical line */
+}
+
+/* Fix horizontal line for dynamic sizing, ensuring the line connects exactly the centers of the outer cards */
+/* We'll use a CSS neat trick: give the children container flex format, and make the ::after line 
+   calc(100% - var(--card-width)). But since card width varies, let's keep it simple with margins */
+
+
+/* Department Styles - using StartupClass colors */
+.node[data-type="department"] .card {
+    border-top: 5px solid var(--accent-primary); /* Yellow accent top border */
+}
+
+.node[data-type="specialist"] .card {
+    border-top: 5px solid var(--accent-secondary); /* Pink accent top border */
+}
+
+.node[data-type="knowledge"] .card {
+    border: 3px solid var(--accent-primary);
+    box-shadow: 0 0 15px var(--glow-color);
+    animation: knowledgeGlow 3s infinite ease-in-out;
+}
+
+@keyframes knowledgeGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 219, 0, 0.2); border-color: rgba(255, 219, 0, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 219, 0, 0.6); border-color: var(--accent-primary); }
+}
+
+/* Details Panel using light theme */
+.details-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh;
+    z-index: 100;
+    background: var(--card-bg); /* Light translucent background */
+    display: flex;
+    justify-content: flex-end;
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: -5px 0 20px rgba(0, 27, 56, 0.1);
+}
+
+.details-panel.hidden {
+    transform: translateX(100%);
+}
+
+.details-content {
+    width: 100%;
+    height: 100%;
+    padding: 3rem 2rem;
+    position: relative;
+    border-radius: 0;
+    border-left: 1px solid var(--node-border);
+    backdrop-filter: blur(10px);
+    background: var(--card-bg);
+}
+
+.close-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: var(--accent-secondary);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .details-panel {
+        width: 100%;
+    }
+}
